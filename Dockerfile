@@ -1,43 +1,37 @@
-# Etapa 1: Imagem base com PHP e Composer
-FROM composer:2.6 as vendor
-
-WORKDIR /app
-
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader
-
-# Etapa 2: Imagem PHP com extensões
+# Etapa 1: imagem base com PHP e extensões necessárias
 FROM php:8.1-fpm
 
-# Instalar extensões necessárias
+# Instala pacotes essenciais
 RUN apt-get update && apt-get install -y \
+    build-essential \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    libzip-dev \
     zip \
     unzip \
     git \
     curl \
     libonig-dev \
     libxml2-dev \
-    libzip-dev \
-    && docker-php-ext-install pdo pdo_mysql zip mbstring exif pcntl
+    && docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl
 
-# Instalar Composer globalmente (opcional se já veio da imagem anterior)
-COPY --from=vendor /usr/bin/composer /usr/bin/composer
+# Instala o Composer
+COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
+# Define diretório de trabalho
 WORKDIR /var/www
 
-# Copiar arquivos do projeto
+# Copia todo o projeto para dentro do container
 COPY . .
 
-# Copiar as dependências instaladas
-COPY --from=vendor /app/vendor ./vendor
+# Instala as dependências do Laravel
+RUN composer install --no-dev --optimize-autoloader
 
-# Permissões
+# Permissões para diretórios necessários
 RUN chmod -R 775 storage bootstrap/cache
 
-# Porta padrão
+# Expõe a porta padrão
 EXPOSE 9000
 
 # Comando padrão
