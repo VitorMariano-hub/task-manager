@@ -1,31 +1,44 @@
-# Use uma imagem oficial do PHP como base
+# Etapa 1: Imagem base com PHP e Composer
+FROM composer:2.6 as vendor
+
+WORKDIR /app
+
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader
+
+# Etapa 2: Imagem PHP com extensões
 FROM php:8.1-fpm
 
-# Instalar dependências do sistema
-RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev zip git
+# Instalar extensões necessárias
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    zip \
+    unzip \
+    git \
+    curl \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    && docker-php-ext-install pdo pdo_mysql zip mbstring exif pcntl
 
-# Instalar extensões do PHP necessárias para o Laravel
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql
+# Instalar Composer globalmente (opcional se já veio da imagem anterior)
+COPY --from=vendor /usr/bin/composer /usr/bin/composer
 
-# Configurar o diretório de trabalho dentro do contêiner
 WORKDIR /var/www
 
-# Copiar os arquivos do projeto para dentro do contêiner
+# Copiar arquivos do projeto
 COPY . .
 
-# Instalar dependências do Composer
-RUN curl -sS https://getcomposer.org/installer | php \
-    && mv composer.phar /usr/local/bin/composer
+# Copiar as dependências instaladas
+COPY --from=vendor /app/vendor ./vendor
 
-# Instalar as dependências do Laravel
-RUN composer install
+# Permissões
+RUN chmod -R 775 storage bootstrap/cache
 
-# Permissões do diretório de cache do Laravel
-RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
-
-# Expor a porta que o contêiner vai rodar
+# Porta padrão
 EXPOSE 9000
 
-# Configurar o servidor FPM do PHP
+# Comando padrão
 CMD ["php-fpm"]
