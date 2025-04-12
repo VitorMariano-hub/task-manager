@@ -1,5 +1,5 @@
 # Etapa 1: imagem base com PHP e extensões necessárias
-FROM php:8.1-fpm
+FROM php:8.3-fpm
 
 # Instala pacotes essenciais
 RUN apt-get update && apt-get install -y \
