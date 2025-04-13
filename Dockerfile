@@ -28,6 +28,9 @@ COPY . .
 # Instala as dependências do Laravel
 RUN composer install --no-dev --optimize-autoloader
 
+# Rodar as migrações do Laravel
+RUN php artisan migrate --force
+
 # Permissões para diretórios necessários
 RUN chmod -R 775 storage bootstrap/cache
 
