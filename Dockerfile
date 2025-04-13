@@ -25,17 +25,18 @@ WORKDIR /var/www
 # Copia todo o projeto para dentro do container
 COPY . .
 
+# Copia o script de entrada
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
 # Instala as dependências do Laravel
 RUN composer install --no-dev --optimize-autoloader
-
-# Rodar as migrações do Laravel
-RUN php artisan migrate --force
 
 # Permissões para diretórios necessários
 RUN chmod -R 775 storage bootstrap/cache
 
-# Expõe a porta padrão
+# Expõe a porta
 EXPOSE 8080
 
-# Comando padrão
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+# Define o script de entrada como comando padrão
+CMD ["entrypoint.sh"]
