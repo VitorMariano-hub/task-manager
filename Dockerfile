@@ -1,4 +1,3 @@
-# Etapa 1: imagem base com PHP e extensões necessárias
 FROM php:8.3-fpm
 
 # Instala pacotes essenciais
@@ -14,7 +13,8 @@ RUN apt-get update && apt-get install -y \
     curl \
     libonig-dev \
     libxml2-dev \
-    && docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl
+    libpq-dev \
+    && docker-php-ext-install pdo pdo_mysql mbstring zip exif pcntl pgsql pdo_pgsql
 
 # Instala o Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
@@ -36,4 +36,3 @@ EXPOSE 8080
 
 # Comando padrão
 CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
-
