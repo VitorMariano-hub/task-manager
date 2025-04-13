@@ -32,7 +32,8 @@ RUN composer install --no-dev --optimize-autoloader
 RUN chmod -R 775 storage bootstrap/cache
 
 # Expõe a porta padrão
-EXPOSE 9000
+EXPOSE 8080
 
 # Comando padrão
-CMD ["php-fpm"]
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+
