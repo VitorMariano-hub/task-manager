@@ -32,6 +32,14 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 # Instala as dependências do Laravel
 RUN composer install --no-dev --optimize-autoloader
 
+RUN composer install --no-dev --optimize-autoloader
+
+# PUBLICA o config e assets do Swagger
+RUN php artisan vendor:publish --provider "L5Swagger\L5SwaggerServiceProvider"
+
+# GERA a documentação
+RUN php artisan l5-swagger:generate
+
 # Permissões para diretórios necessários
 RUN chmod -R 775 storage bootstrap/cache
 

@@ -11,41 +11,6 @@ class AuthController extends Controller
 {
     /**
      * @OA\Post(
-     *     path="/api/register",
-     *     summary="Registrar um novo usuário",
-     *     tags={"Autenticação"},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"name", "email", "password"},
-     *             @OA\Property(property="name", type="string", example="João da Silva"),
-     *             @OA\Property(property="email", type="string", format="email", example="joao@email.com"),
-     *             @OA\Property(property="password", type="string", format="password", example="123456")
-     *         )
-     *     ),
-     *     @OA\Response(response=201, description="Usuário registrado com sucesso"),
-     *     @OA\Response(response=422, description="Erro de validação")
-     * )
-     */
-    public function register(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|unique:users',
-            'password' => 'required|string|min:6',
-        ]);
-
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-        ]);
-
-        return response()->json(['message' => 'Usuário registrado com sucesso!'], 201);
-    }
-
-    /**
-     * @OA\Post(
      *     path="/api/login",
      *     summary="Autenticar usuário e retornar token",
      *     tags={"Autenticação"},
