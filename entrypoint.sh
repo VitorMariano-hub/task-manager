@@ -6,6 +6,8 @@ until php artisan migrate --force; do
   sleep 3
 done
 
+php artisan vendor:publish --provider "L5Swagger\L5SwaggerServiceProvider"
+
 # Gera o Swagger depois que tudo está pronto
 php artisan l5-swagger:generate
 
