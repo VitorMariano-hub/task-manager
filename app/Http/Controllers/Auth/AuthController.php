@@ -3,15 +3,30 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class AuthController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/api/register",
+     *     summary="Registrar um novo usuário",
+     *     tags={"Autenticação"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name", "email", "password"},
+     *             @OA\Property(property="name", type="string", example="João da Silva"),
+     *             @OA\Property(property="email", type="string", format="email", example="joao@email.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="123456")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="Usuário registrado com sucesso"),
+     *     @OA\Response(response=422, description="Erro de validação")
+     * )
+     */
     public function register(Request $request)
     {
         $request->validate([
@@ -29,6 +44,30 @@ class AuthController extends Controller
         return response()->json(['message' => 'Usuário registrado com sucesso!'], 201);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/login",
+     *     summary="Autenticar usuário e retornar token",
+     *     tags={"Autenticação"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email", "password"},
+     *             @OA\Property(property="email", type="string", format="email", example="joao@email.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="123456")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Autenticação bem-sucedida",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="token", type="string", example="1|aBcDeFgHiJkLmNoP")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Não autorizado"),
+     *     @OA\Response(response=422, description="Erro de validação")
+     * )
+     */
     public function login(Request $request)
     {
         $request->validate([
