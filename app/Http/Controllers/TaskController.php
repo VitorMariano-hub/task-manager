@@ -11,6 +11,11 @@ use Illuminate\Http\Request;
  *     description="API para gerenciar tarefas",
  *     version="1.0.0"
  * )
+ * 
+ * @OA\Server(
+ *     url="{L5_SWAGGER_SERVER_URL}",
+ *     description="Servidor definido via variável de ambiente"
+ * )
  */
 
 class TaskController extends Controller
