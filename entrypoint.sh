@@ -6,5 +6,8 @@ until php artisan migrate --force; do
   sleep 3
 done
 
+# Gera o Swagger depois que tudo está pronto
+php artisan l5-swagger:generate
+
 # Inicia o servidor
 php artisan serve --host=0.0.0.0 --port=8080
