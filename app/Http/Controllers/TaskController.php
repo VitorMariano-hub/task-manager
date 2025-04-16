@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 /**
  * @OA\Info(
@@ -34,7 +35,25 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Task::where('user_id', auth()->id())->get();
+        $today = Carbon::today();
+
+        $tasks = Task::with('user:id,name')
+            ->where('user_id', auth()->id())
+            ->whereDate('created_at', $today)
+            ->get()
+            ->map(function ($task) {
+                if ($task->status !== 'completed') {
+                    $endOfDay = Carbon::today()->setHour(23)->setMinute(59)->setSecond(59);
+                    $timeLeft = $endOfDay->diffInSeconds(Carbon::now());
+
+                    $task->time_left = $timeLeft;
+                } else {
+                    $task->time_left = 0;
+                }
+
+                return $task;
+            });
+
         return response()->json($tasks);
     }
 
