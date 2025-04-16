@@ -19,7 +19,9 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [env('FRONTEND_URL', 'http://localhost:3000')],
+    'allowed_origins' => [
+        'https://task-manager-web-pxgc.onrender.com'
+    ],
 
     'allowed_origins_patterns' => [],
 
