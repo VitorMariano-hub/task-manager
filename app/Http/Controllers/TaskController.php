@@ -73,7 +73,8 @@ class TaskController extends Controller
      *     ),
      *     @OA\Response(response=201, description="Tarefa criada com sucesso"),
      *     @OA\Response(response=422, description="Erro de validação"),
-     *     @OA\Response(response=401, description="Não autenticado")
+     *     @OA\Response(response=401, description="Não autenticado"),
+     *     @OA\Response(response=400, description="Limite de tarefas atingido para hoje")
      * )
      */
     public function store(Request $request)
@@ -83,10 +84,21 @@ class TaskController extends Controller
             'description' => 'required|string',
         ]);
 
+        $user = auth()->user();
+
+        $today = Carbon::today();
+        $tasksToday = Task::where('user_id', $user->id)
+                        ->whereDate('created_at', $today)
+                        ->count();
+
+        if ($tasksToday >= 10) {
+            return response()->json(['message' => 'Você atingiu o limite de 10 tarefas diárias.'], 400);
+        }
+
         $task = Task::create([
             'title' => $request->title,
             'description' => $request->description,
-            'user_id' => auth()->id(),
+            'user_id' => $user->id,
         ]);
 
         return response()->json($task, 201);
