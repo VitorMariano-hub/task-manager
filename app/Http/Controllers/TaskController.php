@@ -35,28 +35,30 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $today = Carbon::today();
+        try {
+            $timezone = 'America/Sao_Paulo';
+            $startOfDay = Carbon::today($timezone)->startOfDay()->timezone('UTC');
+            $endOfDay = Carbon::today($timezone)->endOfDay()->timezone('UTC');
 
-        $tasks = Task::with('user:id,name')
-            ->where('user_id', auth()->id())
-            ->whereDate('created_at', $today)
-            ->get()
-            ->map(function ($task) {
-                if ($task->status !== 'completed') {
-                    $endOfDay = Carbon::today()->setHour(23)->setMinute(59)->setSecond(59);
-                    $timeLeft = $endOfDay->diffInSeconds(Carbon::now());
+            $tasks = Task::with('user:id,name')
+                ->where('user_id', auth()->id())
+                ->whereBetween('created_at', [$startOfDay, $endOfDay])
+                ->get()
+                ->map(function ($task) {
+                    $task->time_left = $task->time_left;
+                    return $task;
+                });
 
-                    $task->time_left = $timeLeft;
-                } else {
-                    $task->time_left = 0;
-                }
+            return response()->json($tasks);
+        } catch (\Exception $e) {
+            \Log::error('Erro ao listar tarefas: ' . $e->getMessage());
 
-                return $task;
-            });
-
-        return response()->json($tasks);
+            return response()->json([
+                'message' => 'Ocorreu um erro ao buscar as tarefas. Por favor, tente novamente mais tarde.'
+            ], 500);
+        }
     }
-
+     
     /**
      * @OA\Post(
      *     path="/api/tasks",
@@ -79,29 +81,32 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-        ]);
+        try {
+            $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+            ]);
 
-        $user = auth()->user();
+            $user = auth()->user();
 
-        $today = Carbon::today();
-        $tasksToday = Task::where('user_id', $user->id)
-                        ->whereDate('created_at', $today)
-                        ->count();
+            if (Task::userReachedDailyLimit($user)) {
+                return response()->json(['message' => 'Você atingiu o limite de 10 tarefas diárias.'], 400);
+            }
 
-        if ($tasksToday >= 10) {
-            return response()->json(['message' => 'Você atingiu o limite de 10 tarefas diárias.'], 400);
+            $task = Task::create([
+                'title' => $request->title,
+                'description' => $request->description,
+                'user_id' => $user->id,
+            ]);
+
+            return response()->json($task, 201);
+        } catch (\Exception $e) {
+            \Log::error('Erro ao criar tarefa: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Ocorreu um erro interno. Por favor, tente novamente mais tarde.',
+            ], 500);
         }
-
-        $task = Task::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'user_id' => $user->id,
-        ]);
-
-        return response()->json($task, 201);
     }
 
     /**
