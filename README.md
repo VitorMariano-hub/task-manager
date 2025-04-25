@@ -53,7 +53,7 @@ A documentação da API foi gerada com Swagger.
 Acesse em:
 
 ```
-https://task-manager-0wdh.onrender.com/api/documentation/documentation
+https://task-manager-0wdh.onrender.com/api/documentation
 ```
 
 ## 🌐 Deploy
