@@ -30,7 +30,7 @@ php artisan test
 
 ```bash
 git clone https://github.com/VitorMariano-hub/task-manager.git
-cd kanban-tarefas-backend
+cd task-manager
 cp .env.example .env
 composer install
 php artisan key:generate
