@@ -29,7 +29,7 @@ php artisan test
 ## 🛠 Instalação Local
 
 ```bash
-git clone https://github.com/seu-usuario/kanban-tarefas-backend.git
+git clone https://github.com/VitorMariano-hub/task-manager.git
 cd kanban-tarefas-backend
 cp .env.example .env
 composer install
@@ -50,10 +50,11 @@ Authorization: Bearer {token}
 ## 📄 Documentação da API
 
 A documentação da API foi gerada com Swagger.  
-Acesse em: 
+Acesse em:
 
+```
 https://task-manager-0wdh.onrender.com/api/documentation/documentation
-
+```
 
 ## 🌐 Deploy
 
