@@ -49,7 +49,7 @@ Authorization: Bearer {token}
 
 ## 📄 Documentação da API
 
-A documentação da API foi gerada com Swagger.  
+A documentação da API foi gerada com Swagger.
 Acesse em:
 
 ```
@@ -64,3 +64,12 @@ O backend está publicado gratuitamente na plataforma **Render**.
 
 - 🔗 API Live: [https://task-manager-web-pxgc.onrender.com/](https://task-manager-web-pxgc.onrender.com/)  
 - 📘 Documentação Swagger: `https://task-manager-0wdh.onrender.com/api/documentation`
+
+  👤 Autor
+
+Desenvolvido por Vitor Mariano
+📧 Email: vitorma1992@gmail.com
+
+## 📸 Screenshots
+
+![Swagger](https://i.imgur.com/LY4XcNS.png)
